@@ -288,6 +288,7 @@ fi
 # Execute original command
 ${timeoutcmd} "${@}"
 exitcode=${?}
+info "Cronlock complete: ${CRONLOCK_KEY} exited: ${exitcode}"
 
 if [ "${CRONLOCK_TIMEOUT}" -gt 0 ]; then
   if [ "${exitcode}" = 137 ]; then
