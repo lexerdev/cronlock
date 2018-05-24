@@ -17,11 +17,11 @@
 
 function info {
   if [ "${CRONLOCK_VERBOSE}" = "yes" ]; then
-    echo "${1}" >&2
+    echo "${1}" 2>&1 | logger -t "${CRONLOCK_KEY}"
   fi
 }
 function fatal {
-  echo "${1}" >&2
+  echo "${1}" 2>&1 | logger -t "${CRONLOCK_KEY}"
   exit 201
 }
 
@@ -35,8 +35,7 @@ function get_master {
 
   case $response in
     \*-1)
-      echo "ERR - Unknown master $CRONLOCK_SENTINEL_MASTER" >&2
-      exit 201
+      fatal "ERR - Unknown master $CRONLOCK_SENTINEL_MASTER"
       ;;
     \*2) # Array
       read response <&3
@@ -53,8 +52,7 @@ function get_master {
       read -n $nchars CRONLOCK_PORT <&3
       ;;
     *) # net yet handled
-      echo "ERR - Unknown response\n" >&2
-      exit 201
+      fatal "ERR - Unknown response\n"
       ;;
     esac
 }
@@ -113,8 +111,7 @@ function raw_cmd {
           return 1
         fi
       fi
-      echo "${response#-}" >&2
-      exit 201
+      fatal "${response#-}"
       ;;
     :*) # Integer
       [[ ${response#:} =~ ([[:digit:]]+) ]]
@@ -130,9 +127,8 @@ function raw_cmd {
       fi
       ;;
     *) # net yet handled
-      echo "ERR - Unknown response" >&2
+      fatal "ERR - Unknown response"
       info "${response}"
-      exit 201
       ;;
     esac
 }
@@ -286,7 +282,7 @@ if [ "${CRONLOCK_TIMEOUT}" -le 0 ]; then
 fi
 
 # Execute original command
-${timeoutcmd} "${@}"
+${timeoutcmd} "${@}" 2>&1 | logger -t "${CRONLOCK_KEY}"
 exitcode=${?}
 info "Cronlock complete: ${CRONLOCK_KEY} exited: ${exitcode}"
 
