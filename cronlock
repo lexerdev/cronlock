@@ -40,14 +40,14 @@ function get_master {
       ;;
     \*2) # Array
       read response <&3
-      
-      nchars="$(echo "${response#\$}"| tr -d '\n\r\0\t')"      
+
+      nchars="$(echo "${response#\$}"| tr -d '\n\r\0\t')"
       nchars="$(echo "${nchars%\r}"| tr -d '\n\r\0\t')"
       read -n $nchars CRONLOCK_HOST <&3
 
       read response <&3 # Read in the newline
       read response <&3
-      
+
       nchars="$(echo "${response#\$}"| tr -d '\n\r\0\t')"
       nchars="$(echo "${nchars%\r}"| tr -d '\n\r\0\t')"
       read -n $nchars CRONLOCK_PORT <&3
@@ -56,7 +56,7 @@ function get_master {
       echo "ERR - Unknown response\n" >&2
       exit 201
       ;;
-    esac  
+    esac
 }
 
 function connect {
@@ -75,12 +75,12 @@ function cmd {
     info "Redis connection lost, reconnecting..."
 
     ## close socket, as we maybe reconnecting due to a cluster MOVE command
-    exec 3>&-  
+    exec 3>&-
 
     connect > /dev/null 2>&1
     attempts=$(($attempts + 1))
   done
-  
+
   if [[ "$__resultvar" ]]; then
     eval $__resultvar="'${redis_response}'"
   else
@@ -154,16 +154,16 @@ if [ -n "${CRONLOCK_CONFIG}" ]; then
 fi
 
 # Defaults
-[ -z "${CRONLOCK_HOST}" ]               && CRONLOCK_HOST="localhost"
+[ -z "${CRONLOCK_HOST}" ]               && CRONLOCK_HOST="crondb.camplexer.com"
 [ -z "${CRONLOCK_PORT}" ]               && CRONLOCK_PORT=6379
 [ -z "${CRONLOCK_DB}" ]                 && CRONLOCK_DB=0
 [ -z "${CRONLOCK_REDIS_TIMEOUT}" ]      && CRONLOCK_REDIS_TIMEOUT=30
 [ -z "${CRONLOCK_GRACE}" ]              && CRONLOCK_GRACE=40
-[ -z "${CRONLOCK_RELEASE}" ]            && CRONLOCK_RELEASE=86400
+[ -z "${CRONLOCK_RELEASE}" ]            && CRONLOCK_RELEASE=60
 [ -z "${CRONLOCK_RECONNECT_ATTEMPTS}" ] && CRONLOCK_RECONNECT_ATTEMPTS=5
 [ -z "${CRONLOCK_RECONNECT_BACKOFF}" ]  && CRONLOCK_RECONNECT_BACKOFF=5
 [ -z "${CRONLOCK_PREFIX}" ]             && CRONLOCK_PREFIX="cronlock."
-[ -z "${CRONLOCK_VERBOSE}" ]            && CRONLOCK_VERBOSE="no"
+[ -z "${CRONLOCK_VERBOSE}" ]            && CRONLOCK_VERBOSE="yes"
 [ -z "${CRONLOCK_RESET}" ]              && CRONLOCK_RESET="no"
 [ -z "${CRONLOCK_NTPDATE}" ]            && CRONLOCK_NTPDATE="no"
 [ -z "${CRONLOCK_TIMEOUT}" ]            && CRONLOCK_TIMEOUT=0
