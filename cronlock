@@ -127,7 +127,7 @@ function raw_cmd {
       fi
       ;;
     *) # net yet handled
-      fatal "ERR - Unknown response"
+      echo "ERR - Unknown response" 2>&1 | logger -t "${CRONLOCK_KEY}"
       info "${response}"
       ;;
     esac
