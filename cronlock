@@ -283,7 +283,7 @@ fi
 
 # Execute original command
 ${timeoutcmd} "${@}" 2>&1 | logger -t "${CRONLOCK_KEY}"
-exitcode=${?}
+exitcode=${PIPESTATUS[0]}
 info "Cronlock complete: ${CRONLOCK_KEY} exited: ${exitcode}"
 
 if [ "${CRONLOCK_TIMEOUT}" -gt 0 ]; then
